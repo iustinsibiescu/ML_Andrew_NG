@@ -6,22 +6,18 @@ function [J, grad] = costFunctionReg(theta, X, y, lambda)
 
 % Initialize some useful values
 m = length(y); % number of training examples
+theta_no_bias = theta(2:end);
 
-% You need to return the following variables correctly 
-J = 0;
-grad = zeros(size(theta));
+% Things that may be computed only once to increas performance
+y_pred = sigmoid(X * theta);
 
-% ====================== YOUR CODE HERE ======================
-% Instructions: Compute the cost of a particular choice of theta.
-%               You should set J to the cost.
-%               Compute the partial derivatives and set grad to the partial
-%               derivatives of the cost w.r.t. each parameter in theta
+% Cost is calculated same as before and regularization is afterwards added
+J_without_reg = (log(y_pred)' * y + log(1 - y_pred)' * (1 - y)) / (-m);
+J = J_without_reg + (theta_no_bias' * theta_no_bias) / (2 * m) * lambda;
 
-
-
-
-
-
-% =============================================================
+% The gradient vetctor is calculated same as before and then regularization
+% is added to all the terms with the exception of theta_0
+grad = (X' * (y_pred - y)) ./ m;
+grad(2:end) = grad(2:end) + theta_no_bias / m * lambda;
 
 end
