@@ -42,6 +42,13 @@ y_pred = sigmoid([ones(m, 1) h1] * Theta2');
 % Calculating cost: The main diagonal of the following matrix contains the errors
 J = sum(diag(y_binary * log(y_pred') + (1 - y_binary) * log(1 - y_pred'))) / (-m);
 
+% Adding regularization
+Theta1_no_bias = Theta1(:, 2:end);
+Theta2_no_bias = Theta2(:, 2:end);
+regularization = lambda / (2*m) * (sum(diag(Theta1_no_bias * Theta1_no_bias')) + sum(diag(Theta2_no_bias * Theta2_no_bias')));
+J = J + regularization;
+
+
 %
 % Part 2: Implement the backpropagation algorithm to compute the gradients
 %         Theta1_grad and Theta2_grad. You should return the partial derivatives of
