@@ -30,17 +30,16 @@ J = 0;
 Theta1_grad = zeros(size(Theta1));
 Theta2_grad = zeros(size(Theta2));
 
-% Convert y into m by num_labels matrix, with probability 1 for correct class and 0 otherwise 
+% Feed-forward algorithm
+h1 = sigmoid([ones(m, 1) X] * Theta1');
+h2 = sigmoid([ones(m, 1) h1] * Theta2');
+
 y_binary = zeros(m, num_labels);
 index = sub2ind(size(y_binary), 1:m, y');
 y_binary(index) = 1;
 
-% Feed-forward algorithm
-h1 = sigmoid([ones(m, 1) X] * Theta1');
-y_pred = sigmoid([ones(m, 1) h1] * Theta2');
-
-% Calculating cost: The main diagonal of the following matrix contains the errors
-J = sum(diag(y_binary * log(y_pred') + (1 - y_binary) * log(1 - y_pred'))) / (-m);
+% Calculating cost
+sum(diag(y_binary * h2));
 
 %
 % Part 2: Implement the backpropagation algorithm to compute the gradients
