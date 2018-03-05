@@ -14,6 +14,8 @@ function [J grad] = nnCostFunction(nn_params, ...
 %   partial derivatives of the neural network.
 %
 
+% ========================= Part1: Cost function ==========================
+
 % Reshape nn_params back into the parameters Theta1 and Theta2, the weight matrices
 % for our 2 layer neural network
 Theta1 = reshape(nn_params(1:hidden_layer_size * (input_layer_size + 1)), ...
@@ -35,12 +37,12 @@ y_binary = zeros(m, num_labels);
 index = sub2ind(size(y_binary), 1:m, y');
 y_binary(index) = 1;
 
-% Feed-forward algorithm
+% Feed-forward algorithm: vectorised implementation
 h1 = sigmoid([ones(m, 1) X] * Theta1');
-y_pred = sigmoid([ones(m, 1) h1] * Theta2');
+h2 = sigmoid([ones(m, 1) h1] * Theta2');
 
 % Calculating cost: The main diagonal of the following matrix contains the errors
-J = sum(diag(y_binary * log(y_pred') + (1 - y_binary) * log(1 - y_pred'))) / (-m);
+J = sum(diag(y_binary * log(h2') + (1 - y_binary) * log(1 - h2'))) / (-m);
 
 % Adding regularization
 Theta1_no_bias = Theta1(:, 2:end);
@@ -48,22 +50,17 @@ Theta2_no_bias = Theta2(:, 2:end);
 regularization = lambda / (2*m) * (sum(diag(Theta1_no_bias * Theta1_no_bias')) + sum(diag(Theta2_no_bias * Theta2_no_bias')));
 J = J + regularization;
 
+% ============================= Part2: Gradient ===========================
 
-%
-% Part 2: Implement the backpropagation algorithm to compute the gradients
-%         Theta1_grad and Theta2_grad. You should return the partial derivatives of
-%         the cost function with respect to Theta1 and Theta2 in Theta1_grad and
-%         Theta2_grad, respectively. After implementing Part 2, you can check
-%         that your implementation is correct by running checkNNGradients
-%
-%         Note: The vector y passed into the function is a vector of labels
-%               containing values from 1..K. You need to map this vector into a 
-%               binary vector of 1's and 0's to be used with the neural network
-%               cost function.
-%
-%         Hint: We recommend implementing backpropagation using a for-loop
-%               over the training examples if you are implementing it for the 
-%               first time.
+% For-loop Backpropagation algorithm
+for nr = 1 : m
+    training_example = X(nr, :);
+
+    % Feed-forward
+    a1 = sigmoid(Theta1 * [1; training_example']);
+    a2 = sigmoid(Theta2 * [1; a1]);
+end
+
 %
 % Part 3: Implement regularization with the cost function and gradients.
 %
