@@ -14,6 +14,9 @@ function [J grad] = nnCostFunction(nn_params, ...
 %   partial derivatives of the neural network.
 %
 
+
+
+
 % ========================= Part1: Cost function ==========================
 
 % Reshape nn_params back into the parameters Theta1 and Theta2, the weight matrices
@@ -26,23 +29,16 @@ Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):en
 
 % Setup some useful variables
 m = size(X, 1);
-         
-% You need to return the following variables correctly 
-J = 0;
-Theta1_grad = zeros(size(Theta1));
-Theta2_grad = zeros(size(Theta2));
 
 % Convert y into m by num_labels matrix, with probability 1 for correct class and 0 otherwise 
-y_binary = zeros(m, num_labels);
-index = sub2ind(size(y_binary), 1:m, y');
-y_binary(index) = 1;
+y_binary = repmat(1:num_labels, m, 1) == y;
 
 % Feed-forward algorithm: vectorised implementation
-h1 = sigmoid([ones(m, 1) X] * Theta1');
-h2 = sigmoid([ones(m, 1) h1] * Theta2');
+h2 = sigmoid([ones(m, 1) X] * Theta1');
+h3 = sigmoid([ones(m, 1) h2] * Theta2');
 
 % Calculating cost: The main diagonal of the following matrix contains the errors
-J = sum(diag(y_binary * log(h2') + (1 - y_binary) * log(1 - h2'))) / (-m);
+J = sum(diag(y_binary * log(h3') + (1 - y_binary) * log(1 - h3'))) / (-m);
 
 % Adding regularization
 Theta1_no_bias = Theta1(:, 2:end);
@@ -50,16 +46,37 @@ Theta2_no_bias = Theta2(:, 2:end);
 regularization = lambda / (2*m) * (sum(diag(Theta1_no_bias * Theta1_no_bias')) + sum(diag(Theta2_no_bias * Theta2_no_bias')));
 J = J + regularization;
 
+
+
+
 % ============================= Part2: Gradient ===========================
 
 % For-loop Backpropagation algorithm
+Delta2 = 0;
+Delta1 = 0;
 for nr = 1 : m
-    training_example = X(nr, :);
+    a1 = [1; X(nr, :)'];
+    y_binary = 1:num_labels == y(nr);    
 
     % Feed-forward
-    a1 = sigmoid(Theta1 * [1; training_example']);
-    a2 = sigmoid(Theta2 * [1; a1]);
+    a2 = [1; sigmoid(Theta1 * a1)];
+    a3 = sigmoid(Theta2 * a2);
+    
+    % Computing lower delta's
+    delta3 = a3 - y_binary';
+    delta2 = Theta2' * delta3 .* a2  .* (1 - a2);
+    delta2 = delta2(2:end);
+    
+    % Computing capital delta's
+    Delta2 = Delta2 + delta3 * (a2)';
+    Delta1 = Delta1 + delta2 * (a1)';
 end
+
+
+
+
+
+
 
 %
 % Part 3: Implement regularization with the cost function and gradients.
@@ -93,7 +110,7 @@ end
 % =========================================================================
 
 % Unroll gradients
-grad = [Theta1_grad(:) ; Theta2_grad(:)];
+grad = [Delta1(:) ; Delta2(:)] / m;
 
 
 end
