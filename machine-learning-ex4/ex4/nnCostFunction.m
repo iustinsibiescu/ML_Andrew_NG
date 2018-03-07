@@ -75,42 +75,18 @@ end
 
 
 
+% =========================== Part3: Regularization =======================
+Theta1_no_bias = Theta1;
+Theta1_no_bias(:, 1) = 0;
+Theta2_no_bias = Theta2;
+Theta2_no_bias(:, 1) = 0;
+Theta1_grad = Delta1 + Theta1_no_bias * lambda;
+Theta2_grad = Delta2 + Theta2_no_bias * lambda;
 
 
 
-%
-% Part 3: Implement regularization with the cost function and gradients.
-%
-%         Hint: You can implement this around the code for
-%               backpropagation. That is, you can compute the gradients for
-%               the regularization separately and then add them to Theta1_grad
-%               and Theta2_grad from Part 2.
-%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-% -------------------------------------------------------------
-
-% =========================================================================
 
 % Unroll gradients
-grad = [Delta1(:) ; Delta2(:)] / m;
-
+grad = [Theta1_grad(:) ; Theta2_grad(:)] / m;
 
 end
