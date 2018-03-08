@@ -26,6 +26,7 @@ for i = 1 : m
     y_train = y(1 : i, :);
     theta_train = trainLinearReg(X_train, y_train, lambda);
     
+    % Only using lambda when training and not when checking results
     error_train(i) = linearRegCostFunction(X_train, y_train, theta_train, 0);    
     error_val(i) = linearRegCostFunction(Xval, yval, theta_train, 0);
 end
