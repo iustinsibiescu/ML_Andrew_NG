@@ -11,23 +11,19 @@ K = size(centroids, 1);
 % You need to return the following variables correctly.
 idx = zeros(size(X,1), 1);
 
-% ====================== YOUR CODE HERE ======================
-% Instructions: Go over every example, find its closest centroid, and store
-%               the index inside idx at the appropriate location.
-%               Concretely, idx(i) should contain the index of the centroid
-%               closest to example i. Hence, it should be a value in the 
-%               range 1..K
-%
-% Note: You can use a for-loop over the examples to compute this.
-%
+% This matrix will store the distance from each cluster point to each input point in X
+distance_matrix = [];
 
+% For each cluster point, vectorised implementation of calculating the distance to each and every input point in X
+for i = 1 : K
+    current_centroid = centroids(i, :);
+    distance_vector = sum((X - current_centroid) .^ 2, 2);
+    distance_matrix = [distance_matrix distance_vector];
+end
 
-
-
-
-
-
-% =============================================================
+% Finding the cluster that minimizes the distance to each input point in X
+[M, I] = min(distance_matrix, [], 2);
+idx = I;
 
 end
 
